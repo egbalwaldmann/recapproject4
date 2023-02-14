@@ -1,29 +1,40 @@
+import { useEffect, useState } from "react";
 import "./App.css";
+import Form from "./Form";
+import NewListItem from "./List";
+import useLocalStorageState from "use-local-storage-state";
 
-function App() {
+export default function App() {
+  const [activities, setActivities] = useLocalStorageState("activities", {
+    defaultValue: [],
+  });
+  //  const isGoodWeather = true
+
+  function GetWeatherData() {
+    const [weather, setWeather] = useState([]);
+    useEffect(() => {
+      async function startFetching() {
+        const response = await fetch(
+          "https://example-apis.vercel.app/api/weather"
+        );
+        const weather = await response.json();
+        setWeather(weather);
+      }
+      startFetching();
+    }, []);
+  }
+  GetWeatherData(console.log(GetWeatherData, "weather Data:"));
+
+  function onAddActivity(newActivity) {
+    console.log(newActivity);
+    setActivities([...activities, newActivity]);
+  }
+  console.log("all activities", activities);
+
   return (
-    <div>
-      <form>
-        <h1>weather app</h1>
-
-        {/* new activity field */}
-        <h2>Add new activity</h2>
-        <label for="activity-name">activity name</label>
-        <input id="activity-name" type="text" name="activity-name"></input>
-
-        {/* good weather activity checkbox */}
-        <label for="good-weather-activity">Good-weather activity</label>
-        <input
-          id="good-weather-activity"
-          type="checkbox"
-          name="good-weather-activity"
-        ></input>
-
-        {/* submit button */}
-        <input type="submit" value="Submit"></input>
-      </form>
-    </div>
+    <>
+      <Form onAddActivity={onAddActivity} />
+      <NewListItem activities={activities} />
+    </>
   );
 }
-
-export default App;
